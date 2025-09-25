@@ -1,0 +1,31 @@
+2025-09-25 12:50:42,228 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2025-09-25 12:50:42,273 INFO o.a.j.JMeter: Loading user properties from: D:\AAA_Performance\apache-jmeter-5.6.3\bin\user.properties
+2025-09-25 12:50:42,273 INFO o.a.j.JMeter: Loading system properties from: D:\AAA_Performance\apache-jmeter-5.6.3\bin\system.properties
+2025-09-25 12:50:42,289 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2025-09-25 12:50:42,289 INFO o.a.j.JMeter: Version 5.6.3
+2025-09-25 12:50:42,289 INFO o.a.j.JMeter: java.version=17.0.5
+2025-09-25 12:50:42,289 INFO o.a.j.JMeter: java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+2025-09-25 12:50:42,289 INFO o.a.j.JMeter: os.name=Windows 11
+2025-09-25 12:50:42,289 INFO o.a.j.JMeter: os.arch=amd64
+2025-09-25 12:50:42,290 INFO o.a.j.JMeter: os.version=10.0
+2025-09-25 12:50:42,290 INFO o.a.j.JMeter: file.encoding=Cp1252
+2025-09-25 12:50:42,290 INFO o.a.j.JMeter: java.awt.headless=true
+2025-09-25 12:50:42,291 INFO o.a.j.JMeter: Max memory     =1073741824
+2025-09-25 12:50:42,292 INFO o.a.j.JMeter: Available Processors =8
+2025-09-25 12:50:42,315 INFO o.a.j.JMeter: Default Locale=English (EN)
+2025-09-25 12:50:42,315 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2025-09-25 12:50:42,315 INFO o.a.j.JMeter: JMeterHome=D:\AAA_Performance\apache-jmeter-5.6.3
+2025-09-25 12:50:42,315 INFO o.a.j.JMeter: user.dir  =D:\AAA_Performance
+2025-09-25 12:50:42,316 INFO o.a.j.JMeter: PWD       =D:\AAA_Performance
+2025-09-25 12:50:42,318 INFO o.a.j.JMeter: IP: 10.95.151.226 Name: TestMinds01 FullName: TestMinds01
+2025-09-25 12:50:42,349 ERROR o.a.j.JMeter: An error occurred: 
+java.lang.IllegalArgumentException: Cannot write to 'D:\AAA_Performance\report\AAA_' as folder is not empty
+	at org.apache.jorphan.util.JOrphanUtils.canSafelyWriteToFolder(JOrphanUtils.java:664) ~[jorphan.jar:5.6.3]
+	at org.apache.jorphan.util.JOrphanUtils.canSafelyWriteToFolder(JOrphanUtils.java:620) ~[jorphan.jar:5.6.3]
+	at org.apache.jmeter.JMeter.extractAndSetReportOutputFolder(JMeter.java:542) ~[ApacheJMeter_core.jar:5.6.3]
+	at org.apache.jmeter.JMeter.start(JMeter.java:492) [ApacheJMeter_core.jar:5.6.3]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.apache.jmeter.NewDriver.main(NewDriver.java:259) [ApacheJMeter.jar:5.6.3]
