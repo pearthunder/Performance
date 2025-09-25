@@ -1,0 +1,13 @@
+﻿criteria,licensePlateNumber,rfidTag,customerPhone,customerEmail,customerCode,driversPhone,valid
+licensePlateNumber,xyz1234,null,null,null,null,null,valid
+rfidTag,null,94290+511616,null,null,null,null,valid
+customerPhone,null,null,6785704572,null,null,null,valid
+customerEmail,null,null,null,jane.smith@tidalwave.com,null,null,valid
+customerCode,null,null,null,,1120333,null,valid
+driversPhone,null,null,null,null,null,1234432112,valid
+licensePlateNumber,jujuba12,null,null,null,null,null,invalid
+rfidTag,null,94290+511617,null,null,null,null,invalid
+customerPhone,null,null,3.44676E+19,null,null,null,invalid
+customerEmail,null,null,null,deoclecio@tidalwave.com,null,null,invalid
+customerCode,null,null,null,null,9977865,null,invalid
+driversPhone,null,null,null,null,null,2344454345,invalid

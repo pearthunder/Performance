@@ -1,0 +1,7 @@
+﻿criteria,order
+LicensePlateNumber ,asc
+LicensePlateNumber ,desc
+licensePlateCountryState,asc
+licensePlateCountryState,desc
+rfidTag,asc
+rfidTag,desc

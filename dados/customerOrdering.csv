@@ -1,0 +1,9 @@
+﻿criteria,order
+customerCode,asc
+customerCode,desc
+customerPhone,asc
+customerPhone,desc
+customerEmail,asc
+customerEmail,desc
+legacyCustomerID,asc
+legacyCustomerID,desc

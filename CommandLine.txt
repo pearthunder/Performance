@@ -1,0 +1,20 @@
+
+run and generate report:
+------------------------
+
+D:/AAA_Performance/apache-jmeter-5.6.3/bin/jmeter.bat -n -t D:/AAA_Performance/AAA.jmx -l D:/AAA_Performance/results/results.jtl -e -o D:/AAA_Performance/results/report
+
+D:/AAA_Performance/apache-jmeter-5.6.3/bin/jmeter -j %OUT%=xml -n -t %JMX% -l %JTL%
+
+
+//  set OUT=jmeter.save.saveservice.output_format
+//  set JMX=/usr/jmeter/bin/jenkins.io.jmx
+//  set JTL=/usr/jmeter/reports/jenkins.io.report.jtl
+//  /usr/jmeter/bin/jmeter -j %OUT%=xml -n -t %JMX% -l %JTL%
+
+
+set OUT=jmeter.save.saveservice.output_format
+set JMX=D:/AAA_Performance/AAA.jmx
+set JTL=D:/AAA_Performance/reports/AAA.jtl
+D:/AAA_Performance/apache-jmeter-5.6.3/bin/jmeter.bat -j %OUT%=xml -n -t %JMX% -l %JTL%
+

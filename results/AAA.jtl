@@ -1,0 +1,6 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1758813279293,1901,HTTP Request,200,OK,Thread Group 1-1,text,true,,1236,126,1,1,https://api.adviceslip.com/advice,1900,0,1540
+1758813281665,408,HTTP Request 2,200,OK,Thread Group 1-1,text,true,,1178,126,1,1,https://api.adviceslip.com/advice,408,0,0
+1758813282374,313,HTTP Request,200,OK,Thread Group 1-1,text,true,,1167,126,1,1,https://api.adviceslip.com/advice,313,0,0
+1758813282989,320,HTTP Request 2,200,OK,Thread Group 1-1,text,true,,1164,126,1,1,https://api.adviceslip.com/advice,319,0,0
+1758813283612,339,HTTP Request,200,OK,Thread Group 1-1,text,true,,1131,126,1,1,https://api.adviceslip.com/advice,339,0,0
