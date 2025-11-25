@@ -3,9 +3,9 @@ name: Test JMeter Action
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
-    branches: [master]
+    branches: [main]
     
   workflow_dispatch:
 
@@ -18,6 +18,6 @@ jobs:
       - name: Run JMeter Action on a test
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: Performance/AAA.jmx
+          testFilePath: AAA.jmx
           outputReportsFolder: reports/
 
