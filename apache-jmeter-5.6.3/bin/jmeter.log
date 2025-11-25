@@ -1,51 +1,103 @@
-2025-09-25 16:35:13,124 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
-2025-09-25 16:35:13,153 INFO o.a.j.JMeter: Loading user properties from: user.properties
-2025-09-25 16:35:13,154 INFO o.a.j.JMeter: Loading system properties from: system.properties
-2025-09-25 16:35:13,162 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
-2025-09-25 16:35:13,162 INFO o.a.j.JMeter: Version 5.6.3
-2025-09-25 16:35:13,162 INFO o.a.j.JMeter: java.version=17.0.5
-2025-09-25 16:35:13,163 INFO o.a.j.JMeter: java.vm.name=Java HotSpot(TM) 64-Bit Server VM
-2025-09-25 16:35:13,163 INFO o.a.j.JMeter: os.name=Windows 11
-2025-09-25 16:35:13,163 INFO o.a.j.JMeter: os.arch=amd64
-2025-09-25 16:35:13,163 INFO o.a.j.JMeter: os.version=10.0
-2025-09-25 16:35:13,163 INFO o.a.j.JMeter: file.encoding=Cp1252
-2025-09-25 16:35:13,163 INFO o.a.j.JMeter: java.awt.headless=null
-2025-09-25 16:35:13,163 INFO o.a.j.JMeter: Max memory     =1073741824
-2025-09-25 16:35:13,163 INFO o.a.j.JMeter: Available Processors =8
-2025-09-25 16:35:13,175 INFO o.a.j.JMeter: Default Locale=English (EN)
-2025-09-25 16:35:13,175 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
-2025-09-25 16:35:13,175 INFO o.a.j.JMeter: JMeterHome=D:\AAA_Performance\apache-jmeter-5.6.3
-2025-09-25 16:35:13,175 INFO o.a.j.JMeter: user.dir  =D:\AAA_Performance\apache-jmeter-5.6.3\bin
-2025-09-25 16:35:13,176 INFO o.a.j.JMeter: PWD       =D:\AAA_Performance\apache-jmeter-5.6.3\bin
-2025-09-25 16:35:13,183 INFO o.a.j.JMeter: IP: 10.95.151.226 Name: TestMinds01 FullName: TestMinds01
-2025-09-25 16:35:13,200 INFO o.a.j.JMeter: Loaded icon properties from org/apache/jmeter/images/icon.properties
-2025-09-25 16:35:13,492 INFO o.a.j.JMeterGuiLauncher: Setting LAF to: com.github.weisj.darklaf.DarkLaf:com.github.weisj.darklaf.theme.DarculaTheme
-2025-09-25 16:35:15,189 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-casutg-3.0.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.gui.action.Command], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
-2025-09-25 16:35:15,206 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-manager-1.10.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.gui.action.Command], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
-2025-09-25 16:35:15,383 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-casutg-3.0.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.gui.plugin.MenuCreator], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
-2025-09-25 16:35:15,384 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-manager-1.10.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.gui.plugin.MenuCreator], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
-2025-09-25 16:35:15,827 INFO o.j.r.JARSourceHTTP: Requesting https://jmeter-plugins.org/repo/?installID=windows_11-aec5c5cc12f7067d9fc95e5649676088-gui
-2025-09-25 16:35:18,616 INFO o.j.r.PluginManager: Plugins Status: [jpgc-casutg=3.0, jpgc-plugins-manager=1.10, jmeter-core=5.6.3, jmeter-ftp=5.6.3, jmeter-http=5.6.3, jmeter-jdbc=5.6.3, jmeter-jms=5.6.3, jmeter-junit=5.6.3, jmeter-java=5.6.3, jmeter-ldap=5.6.3, jmeter-mail=5.6.3, jmeter-mongodb=5.6.3, jmeter-native=5.6.3, jmeter-tcp=5.6.3, jmeter-components=5.6.3]
-2025-09-25 16:35:18,618 INFO o.j.r.PluginManagerMenuItem: Plugins Manager has upgrades: [jpgc-casutg, jpgc-plugins-manager]
-2025-09-25 16:35:26,504 INFO o.a.j.s.FileServer: Default base='D:\AAA_Performance\apache-jmeter-5.6.3\bin'
-2025-09-25 16:35:26,509 INFO o.a.j.g.a.Load: Loading file: D:\AAA_Performance\AAA.jmx
-2025-09-25 16:35:26,510 INFO o.a.j.s.FileServer: Set new base='D:\AAA_Performance'
-2025-09-25 16:35:26,673 INFO o.a.j.s.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2
-2025-09-25 16:35:26,678 INFO o.a.j.s.SaveService: Using SaveService properties version 5.0
-2025-09-25 16:35:26,680 INFO o.a.j.s.SaveService: Using SaveService properties file encoding UTF-8
-2025-09-25 16:35:26,681 INFO o.a.j.s.SaveService: Loading file: D:\AAA_Performance\AAA.jmx
-2025-09-25 16:35:26,922 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/html is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
-2025-09-25 16:35:26,922 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xhtml+xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
-2025-09-25 16:35:26,922 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
-2025-09-25 16:35:26,922 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
-2025-09-25 16:35:26,922 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/vnd.wap.wml is org.apache.jmeter.protocol.http.parser.RegexpHTMLParser
-2025-09-25 16:35:26,923 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/css is org.apache.jmeter.protocol.http.parser.CssParser
-2025-09-25 16:35:27,052 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
-2025-09-25 16:35:27,053 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to UTF-8
-2025-09-25 16:35:27,053 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
-2025-09-25 16:35:27,053 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
-2025-09-25 16:35:27,196 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-casutg-3.0.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.visualizers.ResultRenderer], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
-2025-09-25 16:35:27,197 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-manager-1.10.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.visualizers.ResultRenderer], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
-2025-09-25 16:35:27,258 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-casutg-3.0.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.visualizers.RequestView], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
-2025-09-25 16:35:27,258 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-manager-1.10.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.visualizers.RequestView], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
-2025-09-25 16:35:27,812 INFO o.a.j.s.FileServer: Set new base='D:\AAA_Performance'
+2025-10-03 10:12:36,019 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2025-10-03 10:12:36,035 INFO o.a.j.JMeter: Loading user properties from: user.properties
+2025-10-03 10:12:36,035 INFO o.a.j.JMeter: Loading system properties from: system.properties
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: Version 5.6.3
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: java.version=17.0.5
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: os.name=Windows 11
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: os.arch=amd64
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: os.version=10.0
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: file.encoding=Cp1252
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: java.awt.headless=null
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: Max memory     =1073741824
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: Available Processors =8
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: Default Locale=English (EN)
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: JMeterHome=D:\AAA_Performance\apache-jmeter-5.6.3
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: user.dir  =D:\AAA_Performance\apache-jmeter-5.6.3\bin
+2025-10-03 10:12:36,051 INFO o.a.j.JMeter: PWD       =D:\AAA_Performance\apache-jmeter-5.6.3\bin
+2025-10-03 10:12:36,066 INFO o.a.j.JMeter: IP: 192.168.0.8 Name: TestMinds01 FullName: host.docker.internal
+2025-10-03 10:12:36,082 INFO o.a.j.JMeter: Loaded icon properties from org/apache/jmeter/images/icon.properties
+2025-10-03 10:12:36,249 INFO o.a.j.JMeterGuiLauncher: Setting LAF to: com.github.weisj.darklaf.DarkLaf:com.github.weisj.darklaf.theme.DarculaTheme
+2025-10-03 10:12:37,273 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-casutg-3.0.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.gui.action.Command], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-10-03 10:12:37,279 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-manager-1.10.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.gui.action.Command], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-10-03 10:12:37,450 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-casutg-3.0.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.gui.plugin.MenuCreator], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-10-03 10:12:37,450 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-manager-1.10.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.gui.plugin.MenuCreator], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-10-03 10:12:37,734 INFO o.j.r.JARSourceHTTP: Found cached repo
+2025-10-03 10:12:37,936 INFO o.j.r.PluginManager: Plugins Status: [jpgc-casutg=3.0, jpgc-plugins-manager=1.10, jmeter-core=5.6.3, jmeter-ftp=5.6.3, jmeter-http=5.6.3, jmeter-jdbc=5.6.3, jmeter-jms=5.6.3, jmeter-junit=5.6.3, jmeter-java=5.6.3, jmeter-ldap=5.6.3, jmeter-mail=5.6.3, jmeter-mongodb=5.6.3, jmeter-native=5.6.3, jmeter-tcp=5.6.3, jmeter-components=5.6.3]
+2025-10-03 10:12:37,938 INFO o.j.r.PluginManagerMenuItem: Plugins Manager has upgrades: [jpgc-casutg, jpgc-plugins-manager]
+2025-10-03 10:12:48,016 INFO o.a.j.e.KeyToolUtils: keytool found at 'keytool'
+2025-10-03 10:12:48,016 INFO o.a.j.p.h.p.ProxyControl: HTTP(S) Test Script Recorder SSL Proxy will use keys that support embedded 3rd party resources in file D:\AAA_Performance\apache-jmeter-5.6.3\bin\proxyserver.jks
+2025-10-03 10:12:54,406 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must contain the string: '.functions.'
+2025-10-03 10:12:54,406 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must not contain the string: '.gui.'
+2025-10-03 10:12:54,453 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-casutg-3.0.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.functions.Function], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-10-03 10:12:54,453 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-manager-1.10.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.functions.Function], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-10-03 10:12:54,453 ERROR o.a.j.p.h.p.ProxyControl: Program error: test script recording target not found.
+2025-10-03 10:12:59,704 INFO o.a.j.p.h.p.ProxyControl: Valid alias found for :root_ca:
+2025-10-03 10:12:59,704 INFO o.a.j.p.h.p.ProxyControl: Valid alias found for :intermediate_ca:
+2025-10-03 10:12:59,707 INFO o.a.j.p.h.p.Daemon: Creating Daemon Socket on port: 8888
+2025-10-03 10:12:59,707 INFO o.a.j.p.h.p.Daemon: Test Script Recorder up and running!
+2025-10-03 10:13:27,888 INFO o.a.j.p.h.p.Daemon: HTTP(S) Test Script Recorder stopped
+2025-10-03 10:13:48,712 INFO o.a.j.p.h.p.ProxyControl: Valid alias found for :root_ca:
+2025-10-03 10:13:48,712 INFO o.a.j.p.h.p.ProxyControl: Valid alias found for :intermediate_ca:
+2025-10-03 10:13:48,712 INFO o.a.j.p.h.p.Daemon: Creating Daemon Socket on port: 8888
+2025-10-03 10:13:48,712 INFO o.a.j.p.h.p.Daemon: Test Script Recorder up and running!
+2025-10-03 10:15:59,673 INFO o.a.j.p.h.p.Daemon: HTTP(S) Test Script Recorder stopped
+2025-10-03 10:16:02,126 INFO o.a.j.p.h.p.ProxyControl: Valid alias found for :root_ca:
+2025-10-03 10:16:02,126 INFO o.a.j.p.h.p.ProxyControl: Valid alias found for :intermediate_ca:
+2025-10-03 10:16:02,126 INFO o.a.j.p.h.p.Daemon: Creating Daemon Socket on port: 8888
+2025-10-03 10:16:02,126 INFO o.a.j.p.h.p.Daemon: Test Script Recorder up and running!
+2025-10-03 10:16:41,384 INFO o.a.j.p.h.p.Daemon: HTTP(S) Test Script Recorder stopped
+2025-10-03 10:16:52,919 INFO o.a.j.p.h.p.ProxyControl: Valid alias found for :root_ca:
+2025-10-03 10:16:52,919 INFO o.a.j.p.h.p.ProxyControl: Valid alias found for :intermediate_ca:
+2025-10-03 10:16:52,919 INFO o.a.j.p.h.p.Daemon: Creating Daemon Socket on port: 8888
+2025-10-03 10:16:52,919 INFO o.a.j.p.h.p.Daemon: Test Script Recorder up and running!
+2025-10-03 10:17:00,976 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-casutg-3.0.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.protocol.http.proxy.SamplerCreator], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-10-03 10:17:00,976 INFO o.a.j.r.ClassFinder: Will scan jar D:\AAA_Performance\apache-jmeter-5.6.3\lib\ext\jmeter-plugins-manager-1.10.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.protocol.http.proxy.SamplerCreator], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-10-03 10:17:00,976 INFO o.a.j.p.h.p.Proxy: Proxy will remove the headers: If-Modified-Since,If-None-Match,Host
+2025-10-03 10:17:00,992 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
+2025-10-03 10:17:00,992 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to UTF-8
+2025-10-03 10:17:00,992 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
+2025-10-03 10:17:00,992 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
+2025-10-03 10:17:01,449 INFO o.a.j.p.h.p.Proxy: [19583]  KeyStore for SSL loaded OK and put host 'signaler-pa.clients6.google.com' in map with key (signaler-pa.clients6.google.com)
+2025-10-03 10:17:01,485 WARN o.a.j.p.h.p.Proxy: [19583]  Problem with SSL certificate for url  for 'signaler-pa.clients6.google.com'? Ensure browser is set to accept the JMeter proxy cert: Uma conexão estabelecida foi anulada pelo software no computador host
+2025-10-03 10:17:01,485 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2025-10-03 10:17:10,411 INFO o.a.j.p.h.p.Proxy: [46516]  KeyStore for SSL loaded OK and put host 'mail.google.com' in map with key (mail.google.com)
+2025-10-03 10:17:10,441 WARN o.a.j.p.h.p.Proxy: [46516]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Uma conexão estabelecida foi anulada pelo software no computador host
+2025-10-03 10:17:10,922 INFO o.a.j.p.h.p.Proxy: [41225]  KeyStore for SSL loaded OK and put host 'www.google.com' in map with key (www.google.com)
+2025-10-03 10:17:10,937 WARN o.a.j.p.h.p.Proxy: [41225]  Problem with SSL certificate for url  for 'www.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:11,365 INFO o.a.j.p.h.p.Proxy: [29503]  KeyStore for SSL loaded OK and put host 'ssl.gstatic.com' in map with key (ssl.gstatic.com)
+2025-10-03 10:17:11,365 WARN o.a.j.p.h.p.Proxy: [29503]  Problem with SSL certificate for url  for 'ssl.gstatic.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:11,909 WARN o.a.j.p.h.p.Proxy: [56024]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:13,904 WARN o.a.j.p.h.p.Proxy: [38828]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:17,913 WARN o.a.j.p.h.p.Proxy: [44445]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:20,910 WARN o.a.j.p.h.p.Proxy: [35308]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:21,311 INFO o.a.j.p.h.p.Proxy: [22645]  KeyStore for SSL loaded OK and put host 'play.google.com' in map with key (play.google.com)
+2025-10-03 10:17:21,319 WARN o.a.j.p.h.p.Proxy: [22645]  Problem with SSL certificate for url  for 'play.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:21,902 WARN o.a.j.p.h.p.Proxy: [19169]  Problem with SSL certificate for url  for 'ssl.gstatic.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:24,895 WARN o.a.j.p.h.p.Proxy: [36742]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:25,902 WARN o.a.j.p.h.p.Proxy: [30359]  Problem with SSL certificate for url  for 'play.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:32,909 WARN o.a.j.p.h.p.Proxy: [46268]  Problem with SSL certificate for url  for 'ssl.gstatic.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:35,914 WARN o.a.j.p.h.p.Proxy: [47579]  Problem with SSL certificate for url  for 'play.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:35,919 WARN o.a.j.p.h.p.Proxy: [16101]  Problem with SSL certificate for url  for 'play.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:37,899 WARN o.a.j.p.h.p.Proxy: [22753]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:41,907 WARN o.a.j.p.h.p.Proxy: [51099]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:43,906 WARN o.a.j.p.h.p.Proxy: [57496]  Problem with SSL certificate for url  for 'ssl.gstatic.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:54,894 WARN o.a.j.p.h.p.Proxy: [23368]  Problem with SSL certificate for url  for 'ssl.gstatic.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:17:57,851 INFO o.a.j.p.h.p.ProxyControl: [23369]  Creating entry self.events.data.microsoft.com in D:\AAA_Performance\apache-jmeter-5.6.3\bin\proxyserver.jks
+2025-10-03 10:18:01,223 INFO o.a.j.p.h.p.Proxy: [23369]  KeyStore for SSL loaded OK and put host 'self.events.data.microsoft.com' in map with key (self.events.data.microsoft.com)
+2025-10-03 10:18:01,223 WARN o.a.j.p.h.p.Proxy: [13953]  Problem with SSL certificate for url  for 'play.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:18:01,254 WARN o.a.j.p.h.p.Proxy: [23369]  Problem with SSL certificate for url  for 'self.events.data.microsoft.com'? Ensure browser is set to accept the JMeter proxy cert: Remote host terminated the handshake
+2025-10-03 10:18:01,651 INFO o.a.j.p.h.p.Proxy: [36015]  KeyStore for SSL loaded OK and put host 'addons-pa.clients6.google.com' in map with key (addons-pa.clients6.google.com)
+2025-10-03 10:18:01,651 WARN o.a.j.p.h.p.Proxy: [36015]  Problem with SSL certificate for url  for 'addons-pa.clients6.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:18:02,887 WARN o.a.j.p.h.p.Proxy: [13954]  Problem with SSL certificate for url  for 'self.events.data.microsoft.com'? Ensure browser is set to accept the JMeter proxy cert: Remote host terminated the handshake
+2025-10-03 10:18:05,901 WARN o.a.j.p.h.p.Proxy: [17040]  Problem with SSL certificate for url  for 'ssl.gstatic.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:18:06,895 WARN o.a.j.p.h.p.Proxy: [43311]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:18:16,910 WARN o.a.j.p.h.p.Proxy: [9258]  Problem with SSL certificate for url  for 'ssl.gstatic.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:18:16,910 WARN o.a.j.p.h.p.Proxy: [37271]  Problem with SSL certificate for url  for 'play.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:18:17,768 INFO o.a.j.p.h.p.Proxy: [37272]  KeyStore for SSL loaded OK and put host 'settings-win.data.microsoft.com' in map with key (settings-win.data.microsoft.com)
+2025-10-03 10:18:17,776 WARN o.a.j.p.h.p.Proxy: [37272]  Empty response to http over SSL. Probably waiting for user to authorize the certificate for settings-win.data.microsoft.com:443
+2025-10-03 10:18:22,912 WARN o.a.j.p.h.p.Proxy: [19052]  Problem with SSL certificate for url  for 'mail.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:18:22,932 WARN o.a.j.p.h.p.Proxy: [54975]  Problem with SSL certificate for url  for 'www.google.com'? Ensure browser is set to accept the JMeter proxy cert: Received fatal alert: certificate_unknown
+2025-10-03 10:18:26,955 INFO o.a.j.p.h.p.Daemon: HTTP(S) Test Script Recorder stopped
