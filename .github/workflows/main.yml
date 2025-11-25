@@ -13,11 +13,11 @@ jobs:
   action_build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/SngleRun
 
       - name: Run JMeter Action on a test
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: tests/AAA.jmx
+          testFilePath: performance/AAA.jmx
           outputReportsFolder: reports/
 
