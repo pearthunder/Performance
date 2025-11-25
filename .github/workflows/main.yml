@@ -3,9 +3,7 @@ name: Test JMeter Action
 on:
   push:
     branches:
-      - main
   pull_request:
-    branches: [main]
     
   workflow_dispatch:
 
