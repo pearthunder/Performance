@@ -204,9 +204,13 @@ jobs:
           if-no-files-found: warn
 
       - name: Mark job as failed if test failed
+        # This step MUST run without continue-on-error to ensure the job fails when tests fail
+        # Without this, continue-on-error: true on the JMeter step would mask failures
         if: steps.jmeter.outcome != 'success'
         run: |
-          echo "❌ Test ${{ steps.prepare.outputs.test_name }} failed. Job will be marked as failed."
+          echo "❌ Test ${{ steps.prepare.outputs.test_name }} failed."
+          echo "Exit code from JMeter: ${{ steps.jmeter.outputs.test_exit_code }}"
+          echo "Failing this job to ensure test failures are visible in the workflow result."
           exit 1
 
   summary:
