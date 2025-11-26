@@ -1,4 +1,4 @@
-name: Test JMeter Action
+name: JMeter Performance Tests
 
 on:
   push:
@@ -6,18 +6,147 @@ on:
       - main
   pull_request:
     branches: [main]
-    
   workflow_dispatch:
+    inputs:
+      test_pattern:
+        description: 'JMeter test file pattern (e.g., AAA.jmx or *.jmx for all)'
+        required: false
+        default: '*.jmx'
+        type: string
+
+permissions:
+  contents: read
+  actions: read
 
 jobs:
-  action_build:
+  discover-tests:
+    name: Discover JMeter Test Files
     runs-on: ubuntu-latest
+    outputs:
+      test_files: ${{ steps.find-tests.outputs.test_files }}
+      test_count: ${{ steps.find-tests.outputs.test_count }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Run JMeter Action on a test
+      - name: Find JMeter test files
+        id: find-tests
+        run: |
+          PATTERN="${{ github.event.inputs.test_pattern || '*.jmx' }}"
+          
+          # Find all .jmx files, excluding backup directories
+          if [[ "$PATTERN" == "*.jmx" ]]; then
+            # Find all JMX files excluding apache-jmeter directories
+            FILES=$(find . -name "*.jmx" -not -path "*/apache-jmeter-*/*" -not -path "*/.git/*" | sort)
+          else
+            # Specific file pattern
+            FILES=$(find . -name "$PATTERN" -not -path "*/apache-jmeter-*/*" -not -path "*/.git/*" | sort)
+          fi
+          
+          if [ -z "$FILES" ]; then
+            echo "❌ No JMeter test files found matching pattern: $PATTERN"
+            exit 1
+          fi
+          
+          # Convert to JSON array for output
+          JSON_FILES=$(echo "$FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "test_files=$JSON_FILES" >> $GITHUB_OUTPUT
+          
+          echo "Found JMeter test files:"
+          echo "$FILES" | while read -r file; do
+            echo "  - $file"
+          done
+          
+          COUNT=$(echo "$FILES" | grep -c . || echo "0")
+          echo "test_count=$COUNT" >> $GITHUB_OUTPUT
+          echo "Total test files: $COUNT"
+
+  jmeter-tests:
+    name: Run JMeter Performance Tests
+    needs: discover-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        test_file: ${{ fromJson(needs.discover-tests.outputs.test_files) }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Prepare test environment
+        id: prepare
+        run: |
+          TEST_FILE="${{ matrix.test_file }}"
+          TEST_NAME=$(basename "$TEST_FILE" .jmx)
+          REPORT_DIR="reports/$TEST_NAME"
+          echo "TEST_NAME=$TEST_NAME" >> $GITHUB_ENV
+          echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
+          echo "test_name=$TEST_NAME" >> $GITHUB_OUTPUT
+          echo "report_dir=$REPORT_DIR" >> $GITHUB_OUTPUT
+          echo "Running test: $TEST_FILE"
+          echo "Report directory: $REPORT_DIR"
+          mkdir -p "$REPORT_DIR"
+
+      - name: Run JMeter test
+        id: jmeter
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: AAA.jmx
-          outputReportsFolder: reports/
+          testFilePath: ${{ matrix.test_file }}
+          outputReportsFolder: ${{ steps.prepare.outputs.report_dir }}/
+        continue-on-error: true
+
+      - name: Check test results
+        if: steps.jmeter.outcome != 'success'
+        run: |
+          echo "⚠️ Test ${{ steps.prepare.outputs.test_name }} completed with errors or warnings"
+          if [ -d "${{ steps.prepare.outputs.report_dir }}" ]; then
+            echo "Reports available in: ${{ steps.prepare.outputs.report_dir }}"
+            ls -la "${{ steps.prepare.outputs.report_dir }}/" || true
+          fi
+
+      - name: Collect JTL files
+        if: always()
+        run: |
+          # Find any JTL files that might have been generated
+          find . -name "*.jtl" -not -path "*/apache-jmeter-*/*" -not -path "*/.git/*" | while read -r jtl_file; do
+            echo "Found JTL file: $jtl_file"
+            # Copy to report directory if not already there
+            if [[ ! "$jtl_file" == "${{ steps.prepare.outputs.report_dir }}"/* ]]; then
+              cp "$jtl_file" "${{ steps.prepare.outputs.report_dir }}/" || true
+            fi
+          done
+
+      - name: Upload test reports as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-report-${{ steps.prepare.outputs.test_name }}-${{ github.run_number }}
+          path: |
+            ${{ steps.prepare.outputs.report_dir }}/
+          retention-days: 30
+          if-no-files-found: warn
+
+  summary:
+    name: Test Summary
+    needs: [discover-tests, jmeter-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Display test summary
+        run: |
+          echo "## 📊 JMeter Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Total Tests Found:** ${{ needs.discover-tests.outputs.test_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Test Files Executed:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ join(fromJson(needs.discover-tests.outputs.test_files), '\n') }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ needs.jmeter-tests.result == 'success' && '✅ All tests completed' || '⚠️ Some tests had issues' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Reports:** Available as separate artifacts for each test" >> $GITHUB_STEP_SUMMARY
 
