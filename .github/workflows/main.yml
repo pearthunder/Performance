@@ -187,6 +187,99 @@ jobs:
           exit $EXIT_CODE
         continue-on-error: true
 
+      - name: Check error rate from JTL file
+        id: check-error-rate
+        if: always()
+        run: |
+          JTL_FILE="${{ steps.prepare.outputs.jtl_file }}"
+          TEST_NAME="${{ steps.prepare.outputs.test_name }}"
+          
+          echo "📊 Analyzing error rate from JTL file: $JTL_FILE"
+          
+          if [ ! -f "$JTL_FILE" ]; then
+            echo "⚠️ Warning: JTL file not found, cannot check error rate"
+            echo "error_rate_check=skipped" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Parse JTL file to count errors
+          # JTL format: CSV with columns including success (true/false) or errorCount
+          # Count total samples (excluding header line)
+          TOTAL_SAMPLES=$(tail -n +2 "$JTL_FILE" | wc -l | tr -d ' ')
+          
+          if [ "$TOTAL_SAMPLES" -eq 0 ]; then
+            echo "⚠️ Warning: No samples found in JTL file"
+            echo "error_rate_check=skipped" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Count failed samples
+          # Check for success=false or errorCount>0 depending on JTL format
+          # Try to detect format and count failures accordingly
+          FAILED_SAMPLES=0
+          
+          # Method 1: Check for success column (CSV format)
+          if head -1 "$JTL_FILE" | grep -q "success"; then
+            # Find column index for 'success'
+            SUCCESS_COL=$(head -1 "$JTL_FILE" | tr ',' '\n' | grep -n "success" | cut -d: -f1)
+            if [ -n "$SUCCESS_COL" ]; then
+              FAILED_SAMPLES=$(tail -n +2 "$JTL_FILE" | awk -F',' -v col="$SUCCESS_COL" 'tolower($col) == "false" {count++} END {print count+0}')
+            fi
+          fi
+          
+          # Method 2: If no success column, check for errorCount or responseCode != 200
+          if [ "$FAILED_SAMPLES" -eq 0 ] && head -1 "$JTL_FILE" | grep -q "errorCount"; then
+            ERROR_COL=$(head -1 "$JTL_FILE" | tr ',' '\n' | grep -n "errorCount" | cut -d: -f1)
+            if [ -n "$ERROR_COL" ]; then
+              FAILED_SAMPLES=$(tail -n +2 "$JTL_FILE" | awk -F',' -v col="$ERROR_COL" '$col > 0 {count++} END {print count+0}')
+            fi
+          fi
+          
+          # Method 3: Check responseCode column (non-2xx codes are errors)
+          if [ "$FAILED_SAMPLES" -eq 0 ] && head -1 "$JTL_FILE" | grep -q "responseCode"; then
+            RESPONSE_COL=$(head -1 "$JTL_FILE" | tr ',' '\n' | grep -n "responseCode" | cut -d: -f1)
+            if [ -n "$RESPONSE_COL" ]; then
+              FAILED_SAMPLES=$(tail -n +2 "$JTL_FILE" | awk -F',' -v col="$RESPONSE_COL" '$col !~ /^2[0-9][0-9]$/ {count++} END {print count+0}')
+            fi
+          fi
+          
+          # Calculate error percentage
+          if [ "$TOTAL_SAMPLES" -gt 0 ]; then
+            # Use awk for precise floating point calculation
+            ERROR_PERCENTAGE=$(awk "BEGIN {printf \"%.2f\", ($FAILED_SAMPLES / $TOTAL_SAMPLES) * 100}")
+            ERROR_PERCENTAGE_INT=$(awk "BEGIN {printf \"%.0f\", ($FAILED_SAMPLES / $TOTAL_SAMPLES) * 100}")
+          else
+            ERROR_PERCENTAGE=0
+            ERROR_PERCENTAGE_INT=0
+          fi
+          
+          echo "📈 Test Results for $TEST_NAME:"
+          echo "   Total samples: $TOTAL_SAMPLES"
+          echo "   Failed samples: $FAILED_SAMPLES"
+          echo "   Error rate: ${ERROR_PERCENTAGE}%"
+          
+          # Store results for summary
+          echo "total_samples=$TOTAL_SAMPLES" >> $GITHUB_OUTPUT
+          echo "failed_samples=$FAILED_SAMPLES" >> $GITHUB_OUTPUT
+          echo "error_percentage=$ERROR_PERCENTAGE" >> $GITHUB_OUTPUT
+          echo "error_rate_check=completed" >> $GITHUB_OUTPUT
+          
+          # Fail if error rate exceeds 10%
+          MAX_ERROR_RATE=10
+          # Compare using integer percentage (avoid floating point comparison issues)
+          if [ "$ERROR_PERCENTAGE_INT" -gt "$MAX_ERROR_RATE" ]; then
+            echo "❌ ERROR RATE EXCEEDED THRESHOLD!"
+            echo "   Error rate: ${ERROR_PERCENTAGE}% (Threshold: ${MAX_ERROR_RATE}%)"
+            echo "   Test: $TEST_NAME"
+            echo "   Failed samples: $FAILED_SAMPLES out of $TOTAL_SAMPLES"
+            echo "   This test will be marked as failed."
+            echo "error_rate_exceeded=true" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "✅ Error rate within acceptable threshold (${ERROR_PERCENTAGE}% <= ${MAX_ERROR_RATE}%)"
+            echo "error_rate_exceeded=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check test results
         if: steps.jmeter.outcome != 'success'
         run: |
@@ -216,10 +309,23 @@ jobs:
       - name: Mark job as failed if test failed
         # This step MUST run without continue-on-error to ensure the job fails when tests fail
         # Without this, continue-on-error: true on the JMeter step would mask failures
-        if: steps.jmeter.outcome != 'success'
+        # Also checks for error rate threshold violations
+        if: steps.jmeter.outcome != 'success' || steps.check-error-rate.outcome != 'success'
         run: |
-          echo "❌ Test ${{ steps.prepare.outputs.test_name }} failed."
-          echo "Exit code from JMeter: ${{ steps.jmeter.outputs.test_exit_code }}"
+          TEST_NAME="${{ steps.prepare.outputs.test_name }}"
+          echo "❌ Test $TEST_NAME failed."
+          
+          if [ "${{ steps.jmeter.outcome }}" != "success" ]; then
+            echo "   Reason: JMeter execution failed"
+            echo "   Exit code from JMeter: ${{ steps.jmeter.outputs.test_exit_code }}"
+          fi
+          
+          if [ "${{ steps.check-error-rate.outcome }}" != "success" ]; then
+            echo "   Reason: Error rate exceeded 10% threshold"
+            echo "   Error rate: ${{ steps.check-error-rate.outputs.error_percentage }}%"
+            echo "   Failed samples: ${{ steps.check-error-rate.outputs.failed_samples }} out of ${{ steps.check-error-rate.outputs.total_samples }}"
+          fi
+          
           echo "Failing this job to ensure test failures are visible in the workflow result."
           exit 1
 
