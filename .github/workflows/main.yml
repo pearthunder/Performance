@@ -82,75 +82,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cleanup previous test results
-        run: |
-          echo "🧹 Cleaning up previous test results and reports..."
-          
-          # Remove reports directory if it exists
-          if [ -d "reports" ]; then
-            echo "Removing reports directory..."
-            rm -rf reports
-            echo "✅ Reports directory cleaned"
-          else
-            echo "No reports directory found"
-          fi
-          
-          # Remove results directory if it exists
-          if [ -d "results" ]; then
-            echo "Removing results directory..."
-            rm -rf results
-            echo "✅ Results directory cleaned"
-          else
-            echo "No results directory found"
-          fi
-          
-          # Remove any stray JTL files in root
-          if ls *.jtl 2>/dev/null; then
-            echo "Removing JTL files from root..."
-            rm -f *.jtl
-            echo "✅ JTL files cleaned"
-          else
-            echo "No JTL files found in root"
-          fi
-          
-          echo "✅ Cleanup completed"
-
       - name: Prepare test environment
         id: prepare
         run: |
           TEST_FILE="${{ matrix.test_file }}"
           TEST_NAME=$(basename "$TEST_FILE" .jmx)
           
-          # Generate timestamp in format: YYYYMMDD-HHMMSS (filesystem-safe)
+          # Generate timestamp in format: YYYYMMDD-HHMMSS (filesystem-safe) for HTML reports only
           TIMESTAMP=$(date +%Y%m%d-%H%M%S)
           TIMESTAMP_READABLE=$(date +"%Y-%m-%d %H:%M:%S")
           
-          # Create timestamped directory and file names
+          # JTL file: no timestamp - accumulates/overwrites for each test
+          # This allows tracking the latest results while keeping history
+          JTL_FILE="reports/${TEST_NAME}.jtl"
+          
+          # HTML report directory: timestamped - incremental, doesn't overwrite previous runs
           REPORT_DIR="reports/${TEST_NAME}_${TIMESTAMP}"
-          # JTL file will be written to temp location first, then moved to report directory
-          # This is because JMeter requires the report directory to be empty for -o flag
-          JTL_FILE_TEMP="reports/${TEST_NAME}_${TIMESTAMP}.jtl"
-          JTL_FILE="${REPORT_DIR}/${TEST_NAME}_${TIMESTAMP}.jtl"
+          
           ARTIFACT_NAME="jmeter-report-${TEST_NAME}-${TIMESTAMP}"
           
           echo "TEST_NAME=$TEST_NAME" >> $GITHUB_ENV
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
           echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
-          echo "JTL_FILE_TEMP=$JTL_FILE_TEMP" >> $GITHUB_ENV
           echo "JTL_FILE=$JTL_FILE" >> $GITHUB_ENV
           echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
           
           echo "test_name=$TEST_NAME" >> $GITHUB_OUTPUT
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
           echo "report_dir=$REPORT_DIR" >> $GITHUB_OUTPUT
-          echo "jtl_file_temp=$JTL_FILE_TEMP" >> $GITHUB_OUTPUT
           echo "jtl_file=$JTL_FILE" >> $GITHUB_OUTPUT
           echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
           
           echo "Running test: $TEST_FILE"
           echo "Timestamp: $TIMESTAMP_READABLE ($TIMESTAMP)"
-          echo "Report directory: $REPORT_DIR"
-          echo "JTL file: $JTL_FILE"
+          echo "JTL file (accumulated): $JTL_FILE"
+          echo "HTML report directory (timestamped): $REPORT_DIR"
           
           # Create parent reports directory if it doesn't exist
           # But don't create the report directory itself - JMeter needs it empty
@@ -161,63 +127,47 @@ jobs:
         run: |
           TEST_FILE="${{ matrix.test_file }}"
           REPORT_DIR="${{ steps.prepare.outputs.report_dir }}"
-          JTL_FILE_TEMP="${{ steps.prepare.outputs.jtl_file_temp }}"
           JTL_FILE="${{ steps.prepare.outputs.jtl_file }}"
           TEST_NAME="${{ steps.prepare.outputs.test_name }}"
           TIMESTAMP="${{ steps.prepare.outputs.timestamp }}"
           
-          # Use temporary locations for log and JTL files (not in report directory)
+          # Use temporary location for log file (not in report directory)
           # JMeter requires the report directory to be completely empty when using -o flag
           LOG_FILE="reports/${TEST_NAME}_${TIMESTAMP}.log"
           
           echo "🚀 Starting JMeter test: $TEST_FILE"
-          echo "Report directory (will be created by JMeter): $REPORT_DIR"
-          echo "JTL file (temporary location): $JTL_FILE_TEMP"
+          echo "JTL file (accumulated, no timestamp): $JTL_FILE"
+          echo "HTML report directory (timestamped, will be created by JMeter): $REPORT_DIR"
           echo "Log file (temporary location): $LOG_FILE"
           
           # Run JMeter in non-GUI mode with HTML report generation
           # Note: JMeter will create the REPORT_DIR itself and it must be empty
-          # We write JTL and log to temp locations to avoid creating the directory prematurely
+          # JTL file is written directly to its final location (no timestamp, accumulates)
           set +e  # Don't exit on error immediately
           jmeter \
             -n \
             -t "$TEST_FILE" \
-            -l "$JTL_FILE_TEMP" \
+            -l "$JTL_FILE" \
             -e \
             -o "$REPORT_DIR" \
             -j "$LOG_FILE"
           EXIT_CODE=$?
           set -e  # Re-enable exit on error
           
-          # Move JTL and log files into report directory after JMeter creates it
-          if [ -d "$REPORT_DIR" ]; then
-            if [ -f "$JTL_FILE_TEMP" ]; then
-              mv "$JTL_FILE_TEMP" "$JTL_FILE"
-              echo "✅ Moved JTL file to report directory: $JTL_FILE"
-            fi
-            if [ -f "$LOG_FILE" ]; then
-              mv "$LOG_FILE" "$REPORT_DIR/jmeter.log"
-              echo "✅ Moved log file to report directory"
-            fi
-          else
-            echo "⚠️ Warning: Report directory not created by JMeter"
-            if [ -f "$JTL_FILE_TEMP" ]; then
-              echo "JTL file remains at: $JTL_FILE_TEMP"
-            fi
-            if [ -f "$LOG_FILE" ]; then
-              echo "Log file remains at: $LOG_FILE"
-            fi
+          # Move log file into report directory after JMeter creates it
+          if [ -d "$REPORT_DIR" ] && [ -f "$LOG_FILE" ]; then
+            mv "$LOG_FILE" "$REPORT_DIR/jmeter.log"
+            echo "✅ Moved log file to report directory"
+          elif [ -f "$LOG_FILE" ]; then
+            echo "⚠️ Warning: Report directory not created, keeping log in parent directory"
           fi
           
-          # Check if JTL file was created (check both temp and final locations)
+          # Check if JTL file was created
           if [ -f "$JTL_FILE" ]; then
-            echo "✅ JTL file generated: $JTL_FILE"
+            echo "✅ JTL file generated (accumulated): $JTL_FILE"
             echo "File size: $(du -h "$JTL_FILE" | cut -f1)"
-          elif [ -f "$JTL_FILE_TEMP" ]; then
-            echo "✅ JTL file generated (temp location): $JTL_FILE_TEMP"
-            echo "File size: $(du -h "$JTL_FILE_TEMP" | cut -f1)"
           else
-            echo "⚠️ Warning: JTL file not found at $JTL_FILE or $JTL_FILE_TEMP"
+            echo "⚠️ Warning: JTL file not found at $JTL_FILE"
           fi
           
           # Check if report directory has content
@@ -259,6 +209,7 @@ jobs:
           name: ${{ steps.prepare.outputs.artifact_name }}-run${{ github.run_number }}
           path: |
             ${{ steps.prepare.outputs.report_dir }}/
+            ${{ steps.prepare.outputs.jtl_file }}
           retention-days: 30
           if-no-files-found: warn
 
