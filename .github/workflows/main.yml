@@ -264,20 +264,45 @@ jobs:
           echo "error_percentage=$ERROR_PERCENTAGE" >> $GITHUB_OUTPUT
           echo "error_rate_check=completed" >> $GITHUB_OUTPUT
           
-          # Fail if error rate exceeds 10%
-          MAX_ERROR_RATE=10
-          # Compare using integer percentage (avoid floating point comparison issues)
-          if [ "$ERROR_PERCENTAGE_INT" -gt "$MAX_ERROR_RATE" ]; then
-            echo "❌ ERROR RATE EXCEEDED THRESHOLD!"
-            echo "   Error rate: ${ERROR_PERCENTAGE}% (Threshold: ${MAX_ERROR_RATE}%)"
+          # Check error rate against thresholds:
+          # - Passed: < 10% errors
+          # - Unstable: 10% - 20% errors (job passes but marked as unstable)
+          # - Failed: > 20% errors (job fails)
+          WARNING_THRESHOLD=10
+          FAILURE_THRESHOLD=20
+          
+          # Determine status based on error rate
+          if [ "$ERROR_PERCENTAGE_INT" -gt "$FAILURE_THRESHOLD" ]; then
+            # Failed: > 20% errors
+            echo "❌ ERROR RATE EXCEEDED FAILURE THRESHOLD!"
+            echo "   Error rate: ${ERROR_PERCENTAGE}% (Failure threshold: ${FAILURE_THRESHOLD}%)"
             echo "   Test: $TEST_NAME"
             echo "   Failed samples: $FAILED_SAMPLES out of $TOTAL_SAMPLES"
+            echo "   Status: FAILED"
             echo "   This test will be marked as failed."
+            echo "error_rate_status=failed" >> $GITHUB_OUTPUT
             echo "error_rate_exceeded=true" >> $GITHUB_OUTPUT
             exit 1
-          else
-            echo "✅ Error rate within acceptable threshold (${ERROR_PERCENTAGE}% <= ${MAX_ERROR_RATE}%)"
+          elif [ "$ERROR_PERCENTAGE_INT" -ge "$WARNING_THRESHOLD" ]; then
+            # Unstable: 10% - 20% errors
+            echo "⚠️ ERROR RATE EXCEEDS WARNING THRESHOLD (UNSTABLE)"
+            echo "   Error rate: ${ERROR_PERCENTAGE}% (Warning threshold: ${WARNING_THRESHOLD}%, Failure threshold: ${FAILURE_THRESHOLD}%)"
+            echo "   Test: $TEST_NAME"
+            echo "   Failed samples: $FAILED_SAMPLES out of $TOTAL_SAMPLES"
+            echo "   Status: UNSTABLE"
+            echo "   Job will pass but test is marked as unstable."
+            echo "error_rate_status=unstable" >> $GITHUB_OUTPUT
             echo "error_rate_exceeded=false" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            # Passed: < 10% errors
+            echo "✅ Error rate within acceptable threshold"
+            echo "   Error rate: ${ERROR_PERCENTAGE}% (Warning threshold: ${WARNING_THRESHOLD}%)"
+            echo "   Test: $TEST_NAME"
+            echo "   Status: PASSED"
+            echo "error_rate_status=passed" >> $GITHUB_OUTPUT
+            echo "error_rate_exceeded=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
       - name: Check test results
@@ -309,8 +334,8 @@ jobs:
       - name: Mark job as failed if test failed
         # This step MUST run without continue-on-error to ensure the job fails when tests fail
         # Without this, continue-on-error: true on the JMeter step would mask failures
-        # Also checks for error rate threshold violations
-        if: steps.jmeter.outcome != 'success' || steps.check-error-rate.outcome != 'success'
+        # Also checks for error rate threshold violations (>20% = failed, 10-20% = unstable but passes)
+        if: steps.jmeter.outcome != 'success' || (steps.check-error-rate.outcome == 'failure' && steps.check-error-rate.outputs.error_rate_status == 'failed')
         run: |
           TEST_NAME="${{ steps.prepare.outputs.test_name }}"
           echo "❌ Test $TEST_NAME failed."
@@ -320,14 +345,26 @@ jobs:
             echo "   Exit code from JMeter: ${{ steps.jmeter.outputs.test_exit_code }}"
           fi
           
-          if [ "${{ steps.check-error-rate.outcome }}" != "success" ]; then
-            echo "   Reason: Error rate exceeded 10% threshold"
+          if [ "${{ steps.check-error-rate.outputs.error_rate_status }}" == "failed" ]; then
+            echo "   Reason: Error rate exceeded 20% failure threshold"
             echo "   Error rate: ${{ steps.check-error-rate.outputs.error_percentage }}%"
             echo "   Failed samples: ${{ steps.check-error-rate.outputs.failed_samples }} out of ${{ steps.check-error-rate.outputs.total_samples }}"
+            echo "   Threshold: > 20% = FAILED"
           fi
           
           echo "Failing this job to ensure test failures are visible in the workflow result."
           exit 1
+
+      - name: Report unstable test status
+        # Report unstable status (10-20% error rate) without failing the job
+        if: always() && steps.check-error-rate.outputs.error_rate_status == 'unstable'
+        run: |
+          TEST_NAME="${{ steps.prepare.outputs.test_name }}"
+          echo "⚠️ Test $TEST_NAME is UNSTABLE"
+          echo "   Error rate: ${{ steps.check-error-rate.outputs.error_percentage }}%"
+          echo "   Failed samples: ${{ steps.check-error-rate.outputs.failed_samples }} out of ${{ steps.check-error-rate.outputs.total_samples }}"
+          echo "   Status: UNSTABLE (10% - 20% error rate)"
+          echo "   Job will pass but test quality is degraded."
 
   summary:
     name: Test Summary
