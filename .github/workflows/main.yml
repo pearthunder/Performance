@@ -70,6 +70,10 @@ jobs:
       matrix:
         test_file: ${{ fromJson(needs.discover-tests.outputs.test_files) }}
     
+    container:
+      image: justb4/jmeter:5.6.3
+      options: --user root
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -80,20 +84,55 @@ jobs:
           TEST_FILE="${{ matrix.test_file }}"
           TEST_NAME=$(basename "$TEST_FILE" .jmx)
           REPORT_DIR="reports/$TEST_NAME"
+          JTL_FILE="reports/$TEST_NAME/${TEST_NAME}.jtl"
           echo "TEST_NAME=$TEST_NAME" >> $GITHUB_ENV
           echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
+          echo "JTL_FILE=$JTL_FILE" >> $GITHUB_ENV
           echo "test_name=$TEST_NAME" >> $GITHUB_OUTPUT
           echo "report_dir=$REPORT_DIR" >> $GITHUB_OUTPUT
+          echo "jtl_file=$JTL_FILE" >> $GITHUB_OUTPUT
           echo "Running test: $TEST_FILE"
           echo "Report directory: $REPORT_DIR"
           mkdir -p "$REPORT_DIR"
 
       - name: Run JMeter test
         id: jmeter
-        uses: rbhadti94/apache-jmeter-action@v0.5.0
-        with:
-          testFilePath: ${{ matrix.test_file }}
-          outputReportsFolder: ${{ steps.prepare.outputs.report_dir }}/
+        run: |
+          TEST_FILE="${{ matrix.test_file }}"
+          REPORT_DIR="${{ steps.prepare.outputs.report_dir }}"
+          JTL_FILE="${{ steps.prepare.outputs.jtl_file }}"
+          
+          echo "🚀 Starting JMeter test: $TEST_FILE"
+          
+          # Run JMeter in non-GUI mode with HTML report generation
+          jmeter \
+            -n \
+            -t "$TEST_FILE" \
+            -l "$JTL_FILE" \
+            -e \
+            -o "$REPORT_DIR" \
+            -j "$REPORT_DIR/jmeter.log" \
+            || EXIT_CODE=$?
+          
+          # Check if JTL file was created
+          if [ -f "$JTL_FILE" ]; then
+            echo "✅ JTL file generated: $JTL_FILE"
+            echo "File size: $(du -h "$JTL_FILE" | cut -f1)"
+          else
+            echo "⚠️ Warning: JTL file not found at $JTL_FILE"
+          fi
+          
+          # Check if report directory has content
+          if [ -d "$REPORT_DIR" ] && [ "$(ls -A $REPORT_DIR)" ]; then
+            echo "✅ Report directory populated: $REPORT_DIR"
+            echo "Report contents:"
+            ls -lh "$REPORT_DIR" | head -20
+          else
+            echo "⚠️ Warning: Report directory is empty or missing"
+          fi
+          
+          # Exit with error code if test failed
+          exit ${EXIT_CODE:-0}
         continue-on-error: true
 
       - name: Check test results
@@ -103,19 +142,12 @@ jobs:
           if [ -d "${{ steps.prepare.outputs.report_dir }}" ]; then
             echo "Reports available in: ${{ steps.prepare.outputs.report_dir }}"
             ls -la "${{ steps.prepare.outputs.report_dir }}/" || true
-          fi
-
-      - name: Collect JTL files
-        if: always()
-        run: |
-          # Find any JTL files that might have been generated
-          find . -name "*.jtl" -not -path "*/apache-jmeter-*/*" -not -path "*/.git/*" | while read -r jtl_file; do
-            echo "Found JTL file: $jtl_file"
-            # Copy to report directory if not already there
-            if [[ ! "$jtl_file" == "${{ steps.prepare.outputs.report_dir }}"/* ]]; then
-              cp "$jtl_file" "${{ steps.prepare.outputs.report_dir }}/" || true
+            # Show last few lines of JMeter log if available
+            if [ -f "${{ steps.prepare.outputs.report_dir }}/jmeter.log" ]; then
+              echo "Last 20 lines of JMeter log:"
+              tail -20 "${{ steps.prepare.outputs.report_dir }}/jmeter.log" || true
             fi
-          done
+          fi
 
       - name: Upload test reports as artifact
         if: always()
