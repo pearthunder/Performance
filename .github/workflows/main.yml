@@ -127,18 +127,23 @@ jobs:
           
           # Create timestamped directory and file names
           REPORT_DIR="reports/${TEST_NAME}_${TIMESTAMP}"
+          # JTL file will be written to temp location first, then moved to report directory
+          # This is because JMeter requires the report directory to be empty for -o flag
+          JTL_FILE_TEMP="reports/${TEST_NAME}_${TIMESTAMP}.jtl"
           JTL_FILE="${REPORT_DIR}/${TEST_NAME}_${TIMESTAMP}.jtl"
           ARTIFACT_NAME="jmeter-report-${TEST_NAME}-${TIMESTAMP}"
           
           echo "TEST_NAME=$TEST_NAME" >> $GITHUB_ENV
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
           echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
+          echo "JTL_FILE_TEMP=$JTL_FILE_TEMP" >> $GITHUB_ENV
           echo "JTL_FILE=$JTL_FILE" >> $GITHUB_ENV
           echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
           
           echo "test_name=$TEST_NAME" >> $GITHUB_OUTPUT
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
           echo "report_dir=$REPORT_DIR" >> $GITHUB_OUTPUT
+          echo "jtl_file_temp=$JTL_FILE_TEMP" >> $GITHUB_OUTPUT
           echo "jtl_file=$JTL_FILE" >> $GITHUB_OUTPUT
           echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
           
@@ -146,35 +151,73 @@ jobs:
           echo "Timestamp: $TIMESTAMP_READABLE ($TIMESTAMP)"
           echo "Report directory: $REPORT_DIR"
           echo "JTL file: $JTL_FILE"
-          mkdir -p "$REPORT_DIR"
+          
+          # Create parent reports directory if it doesn't exist
+          # But don't create the report directory itself - JMeter needs it empty
+          mkdir -p reports
 
       - name: Run JMeter test
         id: jmeter
         run: |
           TEST_FILE="${{ matrix.test_file }}"
           REPORT_DIR="${{ steps.prepare.outputs.report_dir }}"
+          JTL_FILE_TEMP="${{ steps.prepare.outputs.jtl_file_temp }}"
           JTL_FILE="${{ steps.prepare.outputs.jtl_file }}"
+          TEST_NAME="${{ steps.prepare.outputs.test_name }}"
+          TIMESTAMP="${{ steps.prepare.outputs.timestamp }}"
+          
+          # Use temporary locations for log and JTL files (not in report directory)
+          # JMeter requires the report directory to be completely empty when using -o flag
+          LOG_FILE="reports/${TEST_NAME}_${TIMESTAMP}.log"
           
           echo "🚀 Starting JMeter test: $TEST_FILE"
+          echo "Report directory (will be created by JMeter): $REPORT_DIR"
+          echo "JTL file (temporary location): $JTL_FILE_TEMP"
+          echo "Log file (temporary location): $LOG_FILE"
           
           # Run JMeter in non-GUI mode with HTML report generation
+          # Note: JMeter will create the REPORT_DIR itself and it must be empty
+          # We write JTL and log to temp locations to avoid creating the directory prematurely
           set +e  # Don't exit on error immediately
           jmeter \
             -n \
             -t "$TEST_FILE" \
-            -l "$JTL_FILE" \
+            -l "$JTL_FILE_TEMP" \
             -e \
             -o "$REPORT_DIR" \
-            -j "$REPORT_DIR/jmeter.log"
+            -j "$LOG_FILE"
           EXIT_CODE=$?
           set -e  # Re-enable exit on error
           
-          # Check if JTL file was created
+          # Move JTL and log files into report directory after JMeter creates it
+          if [ -d "$REPORT_DIR" ]; then
+            if [ -f "$JTL_FILE_TEMP" ]; then
+              mv "$JTL_FILE_TEMP" "$JTL_FILE"
+              echo "✅ Moved JTL file to report directory: $JTL_FILE"
+            fi
+            if [ -f "$LOG_FILE" ]; then
+              mv "$LOG_FILE" "$REPORT_DIR/jmeter.log"
+              echo "✅ Moved log file to report directory"
+            fi
+          else
+            echo "⚠️ Warning: Report directory not created by JMeter"
+            if [ -f "$JTL_FILE_TEMP" ]; then
+              echo "JTL file remains at: $JTL_FILE_TEMP"
+            fi
+            if [ -f "$LOG_FILE" ]; then
+              echo "Log file remains at: $LOG_FILE"
+            fi
+          fi
+          
+          # Check if JTL file was created (check both temp and final locations)
           if [ -f "$JTL_FILE" ]; then
             echo "✅ JTL file generated: $JTL_FILE"
             echo "File size: $(du -h "$JTL_FILE" | cut -f1)"
+          elif [ -f "$JTL_FILE_TEMP" ]; then
+            echo "✅ JTL file generated (temp location): $JTL_FILE_TEMP"
+            echo "File size: $(du -h "$JTL_FILE_TEMP" | cut -f1)"
           else
-            echo "⚠️ Warning: JTL file not found at $JTL_FILE"
+            echo "⚠️ Warning: JTL file not found at $JTL_FILE or $JTL_FILE_TEMP"
           fi
           
           # Check if report directory has content
