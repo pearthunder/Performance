@@ -1,3 +1,0 @@
-timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
-1758836221872,2700,529,400,Bad Request,529 Thread 1-1,text,false,Erro,467,128,1,1,https://postman-echo.com/status/529,2700,0,2448
-1758836229574,1442,529,400,Bad Request,529 Thread 1-1,text,false,Erro,469,128,1,1,https://postman-echo.com/status/529,1442,0,0
