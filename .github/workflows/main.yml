@@ -148,6 +148,7 @@ jobs:
             -n \
             -t "$TEST_FILE" \
             -l "$JTL_FILE" \
+            -f \
             -e \
             -o "$REPORT_DIR" \
             -j "$LOG_FILE"
