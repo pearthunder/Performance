@@ -66,7 +66,9 @@ jobs:
     needs: discover-tests
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    # This job will fail if any matrix job fails, ensuring test failures are visible
     strategy:
+      fail-fast: false
       matrix:
         test_file: ${{ fromJson(needs.discover-tests.outputs.test_files) }}
     
@@ -79,6 +81,39 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Cleanup previous test results
+        run: |
+          echo "🧹 Cleaning up previous test results and reports..."
+          
+          # Remove reports directory if it exists
+          if [ -d "reports" ]; then
+            echo "Removing reports directory..."
+            rm -rf reports
+            echo "✅ Reports directory cleaned"
+          else
+            echo "No reports directory found"
+          fi
+          
+          # Remove results directory if it exists
+          if [ -d "results" ]; then
+            echo "Removing results directory..."
+            rm -rf results
+            echo "✅ Results directory cleaned"
+          else
+            echo "No results directory found"
+          fi
+          
+          # Remove any stray JTL files in root
+          if ls *.jtl 2>/dev/null; then
+            echo "Removing JTL files from root..."
+            rm -f *.jtl
+            echo "✅ JTL files cleaned"
+          else
+            echo "No JTL files found in root"
+          fi
+          
+          echo "✅ Cleanup completed"
 
       - name: Prepare test environment
         id: prepare
@@ -107,14 +142,16 @@ jobs:
           echo "🚀 Starting JMeter test: $TEST_FILE"
           
           # Run JMeter in non-GUI mode with HTML report generation
+          set +e  # Don't exit on error immediately
           jmeter \
             -n \
             -t "$TEST_FILE" \
             -l "$JTL_FILE" \
             -e \
             -o "$REPORT_DIR" \
-            -j "$REPORT_DIR/jmeter.log" \
-            || EXIT_CODE=$?
+            -j "$REPORT_DIR/jmeter.log"
+          EXIT_CODE=$?
+          set -e  # Re-enable exit on error
           
           # Check if JTL file was created
           if [ -f "$JTL_FILE" ]; then
@@ -133,14 +170,19 @@ jobs:
             echo "⚠️ Warning: Report directory is empty or missing"
           fi
           
-          # Exit with error code if test failed
-          exit ${EXIT_CODE:-0}
+          # Store exit code for later use
+          echo "test_exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          echo "test_failed=$([ $EXIT_CODE -ne 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          
+          # Exit with error code if test failed (but allow job to continue for artifact collection)
+          exit $EXIT_CODE
         continue-on-error: true
 
       - name: Check test results
         if: steps.jmeter.outcome != 'success'
         run: |
-          echo "⚠️ Test ${{ steps.prepare.outputs.test_name }} completed with errors or warnings"
+          echo "❌ Test ${{ steps.prepare.outputs.test_name }} FAILED"
+          echo "Exit code: ${{ steps.jmeter.outputs.test_exit_code }}"
           if [ -d "${{ steps.prepare.outputs.report_dir }}" ]; then
             echo "Reports available in: ${{ steps.prepare.outputs.report_dir }}"
             ls -la "${{ steps.prepare.outputs.report_dir }}/" || true
@@ -161,6 +203,12 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
+      - name: Mark job as failed if test failed
+        if: steps.jmeter.outcome != 'success'
+        run: |
+          echo "❌ Test ${{ steps.prepare.outputs.test_name }} failed. Job will be marked as failed."
+          exit 1
+
   summary:
     name: Test Summary
     needs: [discover-tests, jmeter-tests]
@@ -180,7 +228,18 @@ jobs:
           echo "${{ join(fromJson(needs.discover-tests.outputs.test_files), '\n') }}" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Status:** ${{ needs.jmeter-tests.result == 'success' && '✅ All tests completed' || '⚠️ Some tests had issues' }}" >> $GITHUB_STEP_SUMMARY
+          
+          # Check the actual job result - this will now correctly reflect test failures
+          if [ "${{ needs.jmeter-tests.result }}" == "success" ]; then
+            echo "**Status:** ✅ All tests completed successfully" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.jmeter-tests.result }}" == "failure" ]; then
+            echo "**Status:** ❌ Some tests failed" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.jmeter-tests.result }}" == "cancelled" ]; then
+            echo "**Status:** ⚠️ Tests were cancelled" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Status:** ⚠️ Tests completed with status: ${{ needs.jmeter-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Reports:** Available as separate artifacts for each test" >> $GITHUB_STEP_SUMMARY
 
