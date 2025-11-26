@@ -120,16 +120,32 @@ jobs:
         run: |
           TEST_FILE="${{ matrix.test_file }}"
           TEST_NAME=$(basename "$TEST_FILE" .jmx)
-          REPORT_DIR="reports/$TEST_NAME"
-          JTL_FILE="reports/$TEST_NAME/${TEST_NAME}.jtl"
+          
+          # Generate timestamp in format: YYYYMMDD-HHMMSS (filesystem-safe)
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          TIMESTAMP_READABLE=$(date +"%Y-%m-%d %H:%M:%S")
+          
+          # Create timestamped directory and file names
+          REPORT_DIR="reports/${TEST_NAME}_${TIMESTAMP}"
+          JTL_FILE="${REPORT_DIR}/${TEST_NAME}_${TIMESTAMP}.jtl"
+          ARTIFACT_NAME="jmeter-report-${TEST_NAME}-${TIMESTAMP}"
+          
           echo "TEST_NAME=$TEST_NAME" >> $GITHUB_ENV
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
           echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
           echo "JTL_FILE=$JTL_FILE" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+          
           echo "test_name=$TEST_NAME" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
           echo "report_dir=$REPORT_DIR" >> $GITHUB_OUTPUT
           echo "jtl_file=$JTL_FILE" >> $GITHUB_OUTPUT
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+          
           echo "Running test: $TEST_FILE"
+          echo "Timestamp: $TIMESTAMP_READABLE ($TIMESTAMP)"
           echo "Report directory: $REPORT_DIR"
+          echo "JTL file: $JTL_FILE"
           mkdir -p "$REPORT_DIR"
 
       - name: Run JMeter test
@@ -197,7 +213,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: jmeter-report-${{ steps.prepare.outputs.test_name }}-${{ github.run_number }}
+          name: ${{ steps.prepare.outputs.artifact_name }}-run${{ github.run_number }}
           path: |
             ${{ steps.prepare.outputs.report_dir }}/
           retention-days: 30
